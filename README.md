@@ -15,7 +15,7 @@ This is a simple file server implemented in Go that serves files and directories
 
 git clone https://github.com/fenix1851/go-file-server
 
-2. If you want just launch the server, click on the executable file for your OS in the releases page. Otherwise, if you want to build the server yourself, go to the next step.
+2. If you want just launch the server, click on the executable file. Otherwise, if you want to build the server yourself, go to the next step.
 
 3. Get the dependencies:    
 
