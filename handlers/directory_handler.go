@@ -3,13 +3,14 @@ package handlers
 import (
 	"fileserver/startup"
 	"fmt"
-	"github.com/gin-gonic/gin"
 	"os"
 	"path/filepath"
+
+	"github.com/gin-gonic/gin"
 )
 
 // RootDirectoryPath is the path to the root directory to be served
-var RootDirectoryPath = startup.RootDirectoryPath
+var RootDirectoryPath = startup.RootPath
 
 func DirectoryHandler(c *gin.Context) {
 	requestPath := c.Request.URL.Path
