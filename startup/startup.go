@@ -5,9 +5,10 @@ import (
 	"encoding/json"
 	"fileserver/repository"
 	"fmt"
-	"github.com/google/uuid"
 	"os"
 	"runtime"
+
+	"github.com/google/uuid"
 )
 
 var RootPath string
@@ -16,11 +17,11 @@ func declareRootPaths() string {
 	osName := runtime.GOOS
 	switch osName {
 	case "windows":
-		return "C:"
+		return "C:\\"
 	case "linux":
-		return "/home"
+		return "/home/"
 	default:
-		return "/home"
+		return "/home/"
 	}
 }
 
