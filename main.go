@@ -17,6 +17,7 @@ func main() {
 	gin.POST("/register", handlers.RegisterHandler)
 	gin.GET("/refresh", handlers.RefreshHandler)
 	gin.Use(middlewares.AuthMiddleware)
+	gin.Use(middlewares.RolesMiddleware)
 	gin.GET("/", handlers.DirectoryHandler)
 	gin.GET("/:path/*filepath", handlers.DirectoryHandler)
 	startup.Init()

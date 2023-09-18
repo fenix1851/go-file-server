@@ -14,10 +14,10 @@ var RootDirectoryPath = startup.RootPath
 
 func DirectoryHandler(c *gin.Context) {
 	requestPath := c.Request.URL.Path
-	var CurrentDirectoryPath string = RootDirectoryPath
+	var CurrentDirectoryPath string = startup.RootPath
 	fmt.Println(requestPath, "requestPath")
 	if requestPath != "/" {
-		CurrentDirectoryPath = filepath.Join(RootDirectoryPath, requestPath)
+		CurrentDirectoryPath = filepath.Join(startup.RootPath, requestPath)
 	}
 	fmt.Println(CurrentDirectoryPath, "CurrentDirectoryPath")
 
