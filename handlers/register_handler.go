@@ -21,7 +21,7 @@ func RegisterHandler(c *gin.Context) {
 			return
 		}
 		// create user
-		user = repository.CreateUser(username, password)
+		user = repository.CreateUser(username, password, 0)
 		// set cookies
 		c.SetCookie("access_token", user.AccessToken, 60*60*24, "/", "localhost", false, true)
 		c.SetCookie("refresh_token", user.RefreshToken, 60*60*24*14, "/", "localhost", false, true)

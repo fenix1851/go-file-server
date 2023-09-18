@@ -3,7 +3,7 @@ package main
 import (
 	"fileserver/handlers"
 	"fileserver/middlewares"
-	"fileserver/utils"
+	"fileserver/startup"
 
 	"github.com/gin-gonic/gin"
 )
@@ -19,6 +19,6 @@ func main() {
 	gin.Use(middlewares.AuthMiddleware)
 	gin.GET("/", handlers.DirectoryHandler)
 	gin.GET("/:path/*filepath", handlers.DirectoryHandler)
-	utils.Init()
+	startup.Init()
 	gin.Run(":4001")
 }

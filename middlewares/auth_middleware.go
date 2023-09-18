@@ -37,6 +37,6 @@ func AuthMiddleware(c *gin.Context) {
 		return
 	}
 	// set user in context
-	c.Set("user", user)
+	c.Set("username", user.Username)
 	c.Next()
 }

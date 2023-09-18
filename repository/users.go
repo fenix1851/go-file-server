@@ -21,11 +21,7 @@ type User struct {
 	Access         int      `json:"acces"`
 }
 
-type AccessControl struct {
-	AccessLevel int
-}
-
-func CreateUser(username string, password string) User {
+func CreateUser(username string, password string, access int) User {
 	// hash password
 	hashedPassword := sha256.Sum256([]byte(password))
 	// create user
@@ -45,7 +41,7 @@ func CreateUser(username string, password string) User {
 		HashedPassword: hashedPassword,
 		RefreshToken:   refresh_token,
 		AccessToken:    access_token,
-		Access:         0,
+		Access:         access,
 	}
 	// create user file
 	userFile, err := os.Create("data/users/" + username + ".json")
