@@ -20,5 +20,7 @@
 # Go workspace file
 go.work
 
-2/data/*json
+/data/*json
 /data/users/*json
+
+
