@@ -18,6 +18,11 @@ type User struct {
 	HashedPassword [32]byte `json:"password"`
 	RefreshToken   string   `json:"refresh_token"`
 	AccessToken    string   `json:"access_token"`
+	Access         int      `json:"acces"`
+}
+
+type AccessControl struct {
+	AccessLevel int
 }
 
 func CreateUser(username string, password string) User {
@@ -33,12 +38,14 @@ func CreateUser(username string, password string) User {
 		fmt.Println(err)
 	}
 	uuid := uuid.New().String()
+
 	user := User{
 		Uuid:           uuid,
 		Username:       username,
 		HashedPassword: hashedPassword,
 		RefreshToken:   refresh_token,
 		AccessToken:    access_token,
+		Access:         0,
 	}
 	// create user file
 	userFile, err := os.Create("data/users/" + username + ".json")
