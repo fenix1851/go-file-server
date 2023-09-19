@@ -65,6 +65,38 @@ func GetUser(username string) User {
 	return user
 }
 
+func GetUsers() ([]User, error) {
+	// get user files
+	userFiles, err := os.ReadDir("data/users/")
+	if err != nil {
+		fmt.Println(err)
+		return nil, err
+	}
+
+	// create slice to hold users
+	var users []User
+
+	// decode users from user files
+	for _, userFile := range userFiles {
+		file, err := os.Open("data/users/" + userFile.Name())
+		if err != nil {
+			fmt.Println(err)
+			continue
+		}
+		defer file.Close() // Close the file when done
+
+		var user User
+		err = json.NewDecoder(file).Decode(&user)
+		if err != nil {
+			fmt.Println(err)
+			continue
+		}
+		users = append(users, user)
+	}
+
+	return users, nil
+}
+
 func GetUserByToken(token string, token_type string) (User, error) {
 	//validate access token
 	err := utils.ValidateToken(token)
