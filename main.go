@@ -13,6 +13,7 @@ func main() {
 	gin.LoadHTMLGlob("templates/*")
 	gin.GET("/login", handlers.LoginHandler)
 	gin.POST("/login", handlers.LoginHandler)
+	gin.GET("/access", handlers.AccessHandler)
 	gin.GET("/register", handlers.RegisterHandler)
 	gin.POST("/register", handlers.RegisterHandler)
 	gin.GET("/refresh", handlers.RefreshHandler)
