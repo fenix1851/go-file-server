@@ -3,7 +3,9 @@ package startup
 import (
 	"crypto/sha256"
 	"encoding/json"
+	"fileserver/cli"
 	"fileserver/repository"
+	"flag"
 	"fmt"
 	"os"
 	"runtime"
@@ -31,9 +33,12 @@ func createAdmin() {
 	if user.Username != "" {
 		fmt.Println("admin already exists")
 		return
+
 	}
-	// create user
-	password := uuid.New().String()
+
+	flag.Parse()
+	password := *cli.AdminPass
+
 	user = repository.CreateUser("admin", password, 999)
 	fmt.Println("created user admin with priviliges with password: \n" + password)
 }
