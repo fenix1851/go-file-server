@@ -1,5 +1,9 @@
 package cli
 
-import "flag"
+import (
+	"flag"
 
-var AdminPass = flag.String("adminPass", "", "admin password")
+	"github.com/google/uuid"
+)
+
+var AdminPass = flag.String("adminPass", uuid.New().String(), "admin password")
