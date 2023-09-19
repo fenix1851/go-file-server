@@ -4,7 +4,6 @@ import (
 	// "enconding/json"
 	"fileserver/repository"
 	"fmt"
-	"net/http"
 
 	"github.com/gin-gonic/gin"
 	// "os"
@@ -26,18 +25,6 @@ func RolesMiddleware(c *gin.Context) {
 		}
 
 	}
-	url := "http://localhost:4001"
-	response, err := http.Get(url)
-	if err != nil {
-		fmt.Println("Ошибка при выполнении запроса:", err)
-		return
-	}
-
-	if response.StatusCode == http.StatusFound {
-		c.Next()
-		return
-	} else {
-		c.Redirect(302, "/notallowed")
-		return
-	}
+	c.Redirect(302, "/notallowed")
+	return
 }

@@ -17,6 +17,7 @@ func main() {
 	gin.GET("/register", handlers.RegisterHandler)
 	gin.POST("/register", handlers.RegisterHandler)
 	gin.GET("/refresh", handlers.RefreshHandler)
+	gin.GET("/notallowed", handlers.AccessHandler)
 	gin.Use(middlewares.AuthMiddleware)
 	gin.Use(middlewares.RolesMiddleware)
 	gin.GET("/", handlers.DirectoryHandler)
