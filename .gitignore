@@ -25,4 +25,5 @@ go.work
 
 data/
 
-
+gin.log
+gin-bin
