@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,7 +8,8 @@
     <style>
         body {
             font-family: Arial, sans-serif;
-            background-color: #f7f7f7;
+            background-color: #121212;
+            color: #ffffff;
             display: flex;
             flex-direction: column;
             justify-content: center;
@@ -15,21 +17,28 @@
             height: 100vh;
             margin: 0;
             transition: all 0.3s ease-in-out;
-            }
+        }
+
         .error-container {
             text-align: center;
-            background-color: #f8d7da; /* Цвет фона - красный для индикации ошибки */
+            background-color: #1e1e1e;
+            /* Темно-серый цвет фона */
             padding: 20px;
-            border: 1px solid #dc3545; /* Цвет границы - красный */
-            border-radius: 5px; /* Закругленные углы контейнера */
-            width: 300px; /* Ширина контейнера */
-            margin: 0 auto; /* Центрирование по горизонтали */
+            border: 1px solid #333;
+            /* Темно-серая граница */
+            border-radius: 5px;
+            /* Закругленные углы контейнера */
+            width: 300px;
+            /* Ширина контейнера */
+            margin: 0 auto;
+            /* Центрирование по горизонтали */
             box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
         }
 
         /* Стили для заголовка ошибки */
         .error-heading {
-            color: #dc3545; /* Красный цвет текста */
+            color: #dc3545;
+            /* Красный цвет текста */
             font-size: 24px;
         }
 
@@ -39,9 +48,12 @@
             margin-top: 10px;
             margin-bottom: 20px;
         }
+
         .error-button {
-            background-color: #dc3545; /* Красный цвет кнопки */
-            color: #fff; /* Белый цвет текста на кнопке */
+            background-color: #dc3545;
+            /* Красный цвет кнопки */
+            color: #fff;
+            /* Белый цвет текста на кнопке */
             border: none;
             border-radius: 3px;
             padding: 10px 20px;
@@ -51,10 +63,12 @@
 
         /* Стили для кнопки при наведении */
         .error-button:hover {
-            background-color: #c82333; /* Цвет при наведении */
+            background-color: #c82333;
+            /* Цвет при наведении */
         }
     </style>
 </head>
+
 <body>
     <div class="error-container">
         <h1 class="error-heading">Error</h1>
@@ -67,4 +81,5 @@
         }
     </script>
 </body>
+
 </html>

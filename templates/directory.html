@@ -4,28 +4,111 @@
 <head>
     <title>Directory Listing: {{.FolderName}}</title>
 </head>
-
-<body>
-    <h1>Directory Listing: {{.FolderName}}</h1>
-    <ul>
-        {{range .Directories}}
-        <li><a class="directory" href="{{.DirectoryPath}}">{{.DirectoryName}}</a></li>
-        {{end}}
-        {{range .Files}}
-        <li><a class="file" href="{{.FilePath}}">{{.FileName}}</a></li>
-        {{end}}
-    </ul>
-</body>
 <style>
+    body {
+        background-color: #121212;
+        color: #ffffff;
+        font-family: Arial, sans-serif;
+        margin: 0;
+        position: relative;
+        min-height: 100vh;
+        overflow-x: hidden;
+        padding-bottom: 40px;
+    }
+
+    h1 {
+        color: #ffffff;
+        background-color: #1e1e1e;
+        padding: 10px;
+        margin: 0;
+    }
+
+    ul {
+        list-style-type: none;
+        padding: 0;
+    }
+
+    .item {
+        display: flex;
+        align-items: center;
+        margin-bottom: 10px;
+        cursor: pointer;
+        transition: background-color 0.2s ease-in-out;
+    }
+
+    .item:hover {
+        background-color: #292757;
+        /* Голубовато-синеватое свечение */
+    }
+
+    .icon {
+        font-size: 20px;
+        margin-right: 10px;
+    }
 
     .directory {
-        color: rgb(0, 0, 0);
-        /* change color of link */
+        color: #ffffff;
+        text-decoration: none;
+        font-weight: bold;
     }
 
     .file {
-        color: rgb(65, 65, 65);
+        color: #9e9e9e;
+        text-decoration: none;
+    }
+
+    .admin-link {
+        color: #007bff;
+        text-decoration: none;
+        font-weight: bold;
+        margin: 10px;
+        display: block;
+    }
+
+    .admin-link:hover {
+        text-decoration: underline;
+    }
+
+    footer {
+        background-color: #1e1e1e;
+        padding: 10px;
+        text-align: center;
+        position: absolute;
+        bottom: 0;
+        width: 99%;
+    }
+
+    .github-link {
+        color: #007bff;
+        text-decoration: none;
+        font-weight: bold;
+    }
+
+    .github-link:hover {
+        text-decoration: underline;
     }
 </style>
+
+<body>
+    <h1>Directory Listing: {{.FolderName}}</h1>
+    <a class="admin-link" href="/admin">Admin Panel</a>
+    <ul>
+        {{range .Directories}}
+        <li class="item">
+            <span class="icon">📁</span> <!-- Значок папки -->
+            <a class="directory" href="{{.DirectoryPath}}">{{.DirectoryName}}</a>
+        </li>
+        {{end}}
+        {{range .Files}}
+        <li class="item">
+            <span class="icon">📄</span> <!-- Значок файла -->
+            <a class="file" href="{{.FilePath}}">{{.FileName}}</a>
+        </li>
+        {{end}}
+    </ul>
+    <footer>
+        <a class="github-link" href="https://github.com/fenix1851/go-file-server">GitHub Repository</a>
+    </footer>
+</body>
 
 </html>
