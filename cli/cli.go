@@ -6,4 +6,5 @@ import (
 	"github.com/google/uuid"
 )
 
-var AdminPass = flag.String("adminPass", uuid.New().String(), "admin password")
+var DefaultAdminPass = uuid.New().String()
+var AdminPass = flag.String("adminPass", DefaultAdminPass, "admin password")

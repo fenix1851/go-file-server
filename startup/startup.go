@@ -29,15 +29,17 @@ func declareRootPaths() string {
 
 func createAdmin() {
 	user := repository.GetUser("admin")
+	flag.Parse()
+	password := *cli.AdminPass
 
 	if user.Username != "" {
 		fmt.Println("admin already exists")
+		fmt.Println(user)
+		hashedPassword := sha256.Sum256([]byte(password))
+		user.HashedPassword = hashedPassword
+		repository.UpdateUser(user)
 		return
-
 	}
-
-	flag.Parse()
-	password := *cli.AdminPass
 
 	user = repository.CreateUser("admin", password, 999)
 	fmt.Println("created user admin with priviliges with password: \n" + password)
