@@ -14,6 +14,7 @@ import (
 )
 
 var RootPath string
+var defaultAdminPass = uuid.New().String()
 
 func declareRootPaths() string {
 	osName := runtime.GOOS
@@ -34,10 +35,14 @@ func createAdmin() {
 
 	if user.Username != "" {
 		fmt.Println("admin already exists")
-		fmt.Println(user)
-		hashedPassword := sha256.Sum256([]byte(password))
-		user.HashedPassword = hashedPassword
-		repository.UpdateUser(user)
+		fmt.Println("passsword:" + password)
+		if password != "" {
+			fmt.Println("password isn`t empty")
+			hashedPassword := sha256.Sum256([]byte(password))
+			user.HashedPassword = hashedPassword
+			repository.UpdateUser(user)
+			return
+		}
 		return
 	}
 
