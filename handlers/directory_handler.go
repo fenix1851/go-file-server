@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-
 	"github.com/gin-gonic/gin"
+	"regexp"
 )
 
 // RootDirectoryPath is the path to the root directory to be served
@@ -17,6 +17,8 @@ func DirectoryHandler(c *gin.Context) {
 	var CurrentDirectoryPath string = startup.RootPath
 	fmt.Println(requestPath, "requestPath")
 	if requestPath != "/" {
+		// Преобразуем путь в стиле Windows в путь в стиле Unix
+		requestPath = filepath.ToSlash(requestPath)
 		CurrentDirectoryPath = filepath.Join(requestPath)
 	}
 	fmt.Println(CurrentDirectoryPath, "CurrentDirectoryPath")
@@ -30,6 +32,11 @@ func DirectoryHandler(c *gin.Context) {
 	if err != nil {
 		if os.IsNotExist(err) {
 			c.JSON(404, gin.H{"error": "Directory not found"})
+			return
+		}
+		// if the error is Access is denied - redirect to /notallowed
+		if os.IsPermission(err) {
+			c.Redirect(302, "/notallowed")
 			return
 		}
 		c.JSON(500, gin.H{"error": err.Error()})
@@ -72,6 +79,13 @@ func DirectoryHandler(c *gin.Context) {
 		entryName := entry.Name()
 		entryPath := filepath.Join(folderPath, entryName)
 		entryPath = entryPath[len(RootDirectoryPath):]
+		entryPath = filepath.ToSlash(entryPath)
+		// remove letter: from path for Windows if it exists and if len > 3 using regexp
+	 
+		regexp := regexp.MustCompile(`^[a-zA-Z]:/`)
+		if regexp.MatchString(entryPath) {
+			entryPath = entryPath[2:]
+		}
 		if entry.IsDir() {
 			directories = append(directories, Directories{DirectoryName: entryName + "/", DirectoryPath: entryPath})
 		} else {
