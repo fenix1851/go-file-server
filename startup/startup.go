@@ -3,7 +3,9 @@ package startup
 import (
 	"crypto/sha256"
 	"encoding/json"
+	"fileserver/cli"
 	"fileserver/repository"
+	"flag"
 	"fmt"
 	"os"
 	"runtime"
@@ -12,6 +14,7 @@ import (
 )
 
 var RootPath string
+var defaultAdminPass = uuid.New().String()
 
 func declareRootPaths() string {
 	osName := runtime.GOOS
@@ -27,13 +30,27 @@ func declareRootPaths() string {
 
 func createAdmin() {
 	user := repository.GetUser("admin")
+	flag.Parse()
+	password := *cli.AdminPass
 
 	if user.Username != "" {
 		fmt.Println("admin already exists")
+		fmt.Println("passsword:" + password)
+		//if admin exists and we declare flag
+		if password != "" {
+			fmt.Println("password isn`t empty")
+			hashedPassword := sha256.Sum256([]byte(password))
+			user.HashedPassword = hashedPassword
+			repository.UpdateUser(user)
+			return
+		}
 		return
 	}
-	// create user
-	password := uuid.New().String()
+
+	// if admin dont exists and we didnt declare flag
+	if password == "" {
+		password = defaultAdminPass
+	}
 	user = repository.CreateUser("admin", password, 999)
 	fmt.Println("created user admin with priviliges with password: \n" + password)
 }
