@@ -4,9 +4,10 @@
 <head>
     <title>Admin Panel</title>
     <style>
-        *{
+        * {
             overflow-x: hidden;
         }
+
         body {
             background-color: #121212;
             color: #ffffff;
@@ -63,11 +64,12 @@
         }
 
         .home-link {
-            color: #007bff;
+            color: #d6e2e3;
             text-decoration: none;
             font-weight: bold;
             margin: 10px;
             display: block;
+            font-family: 'Ubuntu', sans-serif;
         }
 
         .home-link:hover {
@@ -100,7 +102,7 @@
 
         @media screen and (max-width: 768px) {
             .user-card {
-                max-width: 100%; 
+                max-width: 100%;
             }
 
             h1 {
@@ -108,7 +110,7 @@
             }
 
             p {
-                font-size: 14px; 
+                font-size: 14px;
             }
 
             label {
@@ -116,24 +118,24 @@
             }
 
             input[type="text"] {
-                font-size: 14px; 
+                font-size: 14px;
             }
 
             button {
-                font-size: 14px; 
+                font-size: 14px;
             }
 
             .home-link {
-                font-size: 16px; 
+                font-size: 16px;
             }
         }
     </style>
 </head>
 
 <body>
-    <a class="home-link" href="/">Home</a>
+    <a class="home-link" href="/" style="margin-top: 10px; font-family: 'Ubuntu', sans-serif;">Home</a>
     <h1>Users</h1>
-    <p>
+    <p style="margin-top: 20px; margin-bottom: 20px;">
         Accesses: <br>
         0: No Access <br>
         1-555: Read Only <br>
@@ -152,7 +154,7 @@
     </div>
     {{end}}
     <footer class="github-link">
-        <a style="color: #d6e2e3; text-decoration: none; font-weight: bold;  font-family: 'Ubuntu', sans-serif;" href="https://github.com/fenix1851/go-file-server">GitHub Repository</a>
+        <a href="https://github.com/fenix1851/go-file-server" style="color: #d6e2e3; text-decoration: none; font-weight: bold; font-family: 'Ubuntu', sans-serif;">GitHub Repository</a>
     </footer>
 </body>
 
