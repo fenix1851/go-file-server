@@ -2,7 +2,6 @@
 <html>
 
 <head>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Ubuntu&display=swap">
     <title>Admin Panel</title>
     <style>
         * {
@@ -155,30 +154,20 @@
         556-998: Read/Write <br>
         999: Admin
     </p>
-    <!-- Пример пользовательской информации -->
+    {{range .Users}}
     <div class="user-card">
         <form action="/admin/patch_user" method="post">
-            <p>Username: JohnDoe</p>
-            <input type="hidden" id="username" name="username" value="JohnDoe">
+            <p>Username: {{.Username}}</p>
+            <input type="hidden" id="username" name="username" value="{{.Username}}">
             <p><label for="access">Access:</label></p>
-            <input type="text" id="access" name="access" value="555">
+            <input type="text" id="access" name="access" value="{{.Access}}">
             <button type="submit">Update User</button>
         </form>
     </div>
-    <div class="user-card">
-        <form action="/admin/patch_user" method="post">
-            <p>Username: JaneSmith</p>
-            <input type="hidden" id="username" name="username" value="JaneSmith">
-            <p><label for="access">Access:</label></p>
-            <input type="text" id="access" name="access" value="998">
-            <button type="submit">Update User</button>
-        </form>
-    </div>
-    <!-- Дополнительные пользователи могут быть добавлены по аналогии -->
+    {{end}}
     <footer class="github-link">
         <a href="https://github.com/fenix1851/go-file-server" style="color: #d6e2e3; text-decoration: none; font-weight: bold; font-family: 'Ubuntu', sans-serif;">GitHub Repository</a>
     </footer>
 </body>
 
 </html>
-
