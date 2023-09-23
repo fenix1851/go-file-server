@@ -84,13 +84,48 @@
         }
 
         .github-link {
-            color: #007bff;
-            text-decoration: none;
-            font-weight: bold;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            padding: 10px;
+            background-color: #000000;
+            background-image: linear-gradient(to bottom, #4e4e4e, #000000);
+            width: 100%;
+            text-align: center;
         }
 
         .github-link:hover {
             text-decoration: underline;
+        }
+
+        @media screen and (max-width: 768px) {
+            .user-card {
+                max-width: 100%; 
+            }
+
+            h1 {
+                font-size: 24px;
+            }
+
+            p {
+                font-size: 14px; 
+            }
+
+            label {
+                font-size: 16px;
+            }
+
+            input[type="text"] {
+                font-size: 14px; 
+            }
+
+            button {
+                font-size: 14px; 
+            }
+
+            .home-link {
+                font-size: 16px; 
+            }
         }
     </style>
 </head>
@@ -116,8 +151,8 @@
         </form>
     </div>
     {{end}}
-    <footer>
-        <a class="github-link" href="https://github.com/fenix1851/go-file-server">GitHub Repository</a>
+    <footer class="github-link">
+        <a style="color: #d6e2e3; text-decoration: none; font-weight: bold;  font-family: 'Ubuntu', sans-serif;" href="https://github.com/fenix1851/go-file-server">GitHub Repository</a>
     </footer>
 </body>
 
