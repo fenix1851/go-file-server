@@ -25,14 +25,16 @@ func LoginHandler(c *gin.Context) {
 		}
 		// check if password is correct
 		hashedPassword := utils.HashPassword(password)
+
 		if user.HashedPassword != hashedPassword {
 			c.JSON(401, gin.H{"error": "Incorrect password"})
 			return
 		}
 		// create token
-		access_token, err := utils.CreateToken(user.Username, "access")
-		refresh_token, err := utils.CreateToken(user.Username, "refresh")
-		if err != nil {
+		access_token, err1 := utils.CreateToken(user.Username, "access")
+		refresh_token, err2 := utils.CreateToken(user.Username, "refresh")
+		//you had unused err while creating access token
+		if err1 != nil || err2 != nil {
 			c.HTML(500, "login.html", gin.H{"Error": "Error creating token"})
 			return
 		}

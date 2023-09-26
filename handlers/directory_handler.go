@@ -5,8 +5,9 @@ import (
 	"fmt"
 	"os"
 	"path/filepath"
-	"github.com/gin-gonic/gin"
 	"regexp"
+
+	"github.com/gin-gonic/gin"
 )
 
 // RootDirectoryPath is the path to the root directory to be served
@@ -55,12 +56,34 @@ func DirectoryHandler(c *gin.Context) {
 	defer directory.Close()
 
 	// Itterate over the directory entries
-	entries, err := directory.Readdir(-1)
+
 	if err != nil {
 
 		c.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
+
+	//make pseudoDir
+	parentDir := CurrentDirectoryPath + "/.."
+	pseudoDir, err := os.Stat(parentDir)
+	if err != nil {
+		fmt.Println("Ошибка:", err)
+		return
+	}
+	fmt.Println("current path" + requestPath)
+	fmt.Println("root path" + RootDirectoryPath)
+
+	fileInfos, err := directory.Readdir(-1)
+	if err != nil {
+		c.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
+	//make pseudoDir came first in slice
+	var entries []os.FileInfo
+	entries = append(entries, pseudoDir)
+	//add file infos
+	entries = append(entries, fileInfos...)
+
 	type Files struct {
 		FileName string
 		FilePath string
@@ -74,6 +97,10 @@ func DirectoryHandler(c *gin.Context) {
 	var directories []Directories
 	var files []Files
 
+	if CurrentDirectoryPath == startup.RootPath {
+		entries = append(entries[:0], entries[0+1:]...)
+	}
+
 	// Process directory entries
 	for _, entry := range entries {
 		entryName := entry.Name()
@@ -81,7 +108,10 @@ func DirectoryHandler(c *gin.Context) {
 		entryPath = entryPath[len(RootDirectoryPath):]
 		entryPath = filepath.ToSlash(entryPath)
 		// remove letter: from path for Windows if it exists and if len > 3 using regexp
-	 
+
+		if entry == pseudoDir {
+			entryName = ".."
+		}
 		regexp := regexp.MustCompile(`^[a-zA-Z]:/`)
 		if regexp.MatchString(entryPath) {
 			entryPath = entryPath[2:]
