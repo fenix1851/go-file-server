@@ -110,7 +110,7 @@ func DirectoryHandler(c *gin.Context) {
 		// remove letter: from path for Windows if it exists and if len > 3 using regexp
 
 		if entry == pseudoDir {
-			entryName = "..."
+			entryName = ".."
 		}
 		regexp := regexp.MustCompile(`^[a-zA-Z]:/`)
 		if regexp.MatchString(entryPath) {
