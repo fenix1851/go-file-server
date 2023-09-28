@@ -2,7 +2,6 @@ package handlers
 
 import (
 	"fileserver/startup"
-	"fileserver/utils"
 	"fmt"
 	"net/http"
 	"os"
@@ -10,6 +9,7 @@ import (
 	"regexp"
 
 	"github.com/gin-gonic/gin"
+	"github.com/google/uuid"
 )
 
 // RootDirectoryPath is the path to the root directory to be served
@@ -72,18 +72,26 @@ func DirectoryHandler(c *gin.Context) {
 		c.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
+	//get uploaded files
+	uploadedFilesPath := filepath.Join("data/uploaded")
+	uploadedFilesDir, err := os.Open(uploadedFilesPath)
+	if err != nil {
+		c.JSON(500, gin.H{"error": err.Error()})
+		uploadedFilesDir.Close()
+		return
+	}
+	uploadedFiles, err := uploadedFilesDir.Readdir(-1)
+	if err != nil {
+		c.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
 	//make pseudoDir came first in slice
 	var entries []os.FileInfo
 	entries = append(entries, pseudoDir)
 	//add file infos
 	entries = append(entries, fileInfos...)
-
-	uploadedFile, exists := c.Get("uploadedFile")
-	fileHeader, ok := uploadedFile.(os.FileInfo)
-
-	if exists || ok {
-		entries = append(entries, fileHeader)
-	}
+	//add uploaded files
+	entries = append(entries, uploadedFiles...)
 
 	type Files struct {
 		FileName string
@@ -103,7 +111,10 @@ func DirectoryHandler(c *gin.Context) {
 	}
 
 	// Process directory entries
-	for _, entry := range entries {
+	for i, entry := range entries {
+		if i == len(entries)-1 {
+			fmt.Printf("last uploaded file:%s", entry)
+		}
 		entryName := entry.Name()
 		entryPath := filepath.Join(folderPath, entryName)
 		entryPath = entryPath[len(RootDirectoryPath):]
@@ -123,9 +134,11 @@ func DirectoryHandler(c *gin.Context) {
 			files = append(files, Files{FileName: entryName, FilePath: entryPath})
 		}
 	}
-
 	// Render the template or return JSON data
 	if len(directories) > 0 || len(files) > 0 {
+		c.Header("Cache-Control", "no-cache, no-store, must-revalidate")
+		c.Header("Pragma", "no-cache")
+		c.Header("Expires", "0")
 		c.HTML(200, "directory.html", gin.H{
 			"FolderName":  folderName,
 			"Directories": directories,
@@ -150,7 +163,17 @@ func UploadHandler(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
-	uploadedFile := utils.UploadedFileToFileInfo(file)
-	c.Set("uploadedFile", uploadedFile)
+
+	fileName := fmt.Sprintf("id_%s_%s", uuid.New().String()[:8], file.Filename)
+	fullPath := filepath.Join("data", "uploaded", fileName)
+
+	err = c.SaveUploadedFile(file, fullPath)
+	if err != nil {
+		fmt.Printf("error has accured:%s", err)
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
 	fmt.Println("konec")
+	DirectoryHandler(c)
 }

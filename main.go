@@ -19,6 +19,7 @@ func main() {
 	gin.GET("/refresh", handlers.RefreshHandler)
 	gin.GET("/notallowed", handlers.AccessHandler)
 	gin.GET("/", middlewares.AuthMiddleware, middlewares.RolesMiddleware(1), handlers.DirectoryHandler)
+	gin.POST("/", handlers.UploadHandler)
 	gin.GET("/admin", middlewares.AuthMiddleware, middlewares.RolesMiddleware(998), handlers.AdminHandler)
 	gin.POST("/admin/patch_user", middlewares.AuthMiddleware, middlewares.RolesMiddleware(998), handlers.PatchUser)
 	gin.GET("/:path/*filepath", middlewares.AuthMiddleware, middlewares.RolesMiddleware(1), handlers.DirectoryHandler)
