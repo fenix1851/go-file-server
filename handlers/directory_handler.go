@@ -2,7 +2,9 @@ package handlers
 
 import (
 	"fileserver/startup"
+	"fileserver/utils"
 	"fmt"
+	"net/http"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -55,14 +57,6 @@ func DirectoryHandler(c *gin.Context) {
 	}
 	defer directory.Close()
 
-	// Itterate over the directory entries
-
-	if err != nil {
-
-		c.JSON(500, gin.H{"error": err.Error()})
-		return
-	}
-
 	//make pseudoDir
 	parentDir := CurrentDirectoryPath + "/.."
 	pseudoDir, err := os.Stat(parentDir)
@@ -83,6 +77,13 @@ func DirectoryHandler(c *gin.Context) {
 	entries = append(entries, pseudoDir)
 	//add file infos
 	entries = append(entries, fileInfos...)
+
+	uploadedFile, exists := c.Get("uploadedFile")
+	fileHeader, ok := uploadedFile.(os.FileInfo)
+
+	if exists || ok {
+		entries = append(entries, fileHeader)
+	}
 
 	type Files struct {
 		FileName string
@@ -140,4 +141,16 @@ func FileHandler(c *gin.Context) {
 	filePath := c.Param("file_path")
 	// Serve the file for download
 	c.File(filePath)
+}
+
+func UploadHandler(c *gin.Context) {
+	fmt.Print("getting Files...\n")
+	file, err := c.FormFile("file")
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+	uploadedFile := utils.UploadedFileToFileInfo(file)
+	c.Set("uploadedFile", uploadedFile)
+	fmt.Println("konec")
 }
