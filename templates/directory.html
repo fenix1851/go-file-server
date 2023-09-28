@@ -13,13 +13,13 @@
         position: relative;
         min-height: 100vh;
         overflow-x: hidden;
-        padding-bottom: 40px;
+        padding-bottom: 2.5rem; /* Заменяем padding на rem */
     }
 
     h1 {
         color: #ffffff;
         background-color: #1e1e1e;
-        padding: 10px;
+        padding: 0.625rem; /* Заменяем padding на rem */
         margin: 0;
     }
 
@@ -31,7 +31,7 @@
     .item {
         display: flex;
         align-items: center;
-        margin-bottom: 10px;
+        margin-bottom: 0.625rem; /* Заменяем margin на rem */
         cursor: pointer;
         transition: background-color 0.2s ease-in-out;
     }
@@ -42,8 +42,8 @@
     }
 
     .icon {
-        font-size: 20px;
-        margin-right: 10px;
+        font-size: 1.25rem; /* Заменяем font-size на rem */
+        margin-right: 0.625rem; /* Заменяем margin на rem */
     }
 
     .directory {
@@ -61,7 +61,7 @@
         color: #007bff;
         text-decoration: none;
         font-weight: bold;
-        margin: 10px;
+        margin: 0.625rem; /* Заменяем margin на rem */
         display: block;
     }
 
@@ -71,7 +71,7 @@
 
     footer {
         background-color: #1e1e1e;
-        padding: 10px;
+        padding: 0.625rem; /* Заменяем padding на rem */
         text-align: center;
         position: absolute;
         bottom: 0;
@@ -86,6 +86,25 @@
 
     .github-link:hover {
         text-decoration: underline;
+    }
+
+    .container {
+        position: relative;
+        /* Добавьте другие стили для вашего контейнера с контентом */
+    }
+
+    #uploadButton {
+        position: fixed;
+        bottom: 1.25rem; /* Заменяем bottom на rem */
+        right: 1.25rem; /* Заменяем right на rem */
+        width: 3.125rem; /* Заменяем width на rem */
+        height: 3.125rem; /* Заменяем height на rem */
+        background-color: #007BFF;
+        color: white;
+        border: none;
+        border-radius: 50%;
+        cursor: pointer;
+        font-size: 1.5rem; /* Заменяем font-size на rem */
     }
 </style>
 
@@ -109,6 +128,38 @@
     <footer>
         <a class="github-link" href="https://github.com/fenix1851/go-file-server">GitHub Repository</a>
     </footer>
+    <button id="uploadButton">+</button>
+
+    <script>
+        document.getElementById('uploadButton').addEventListener('click', function () {
+            const fileInput = document.createElement('input');
+            fileInput.type = 'file';
+            fileInput.accept = '*/*'; // Определите принимаемые типы файлов
+            fileInput.click();
+
+            fileInput.addEventListener('change', function () {
+                const selectedFile = fileInput.files[0];
+                if (selectedFile) {
+                    const formData = new FormData();
+                    formData.append('file', selectedFile);
+
+                    fetch('/upload', {
+                        method: 'POST',
+                        body: formData,
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        // Обработайте ответ от сервера, если необходимо
+                        console.log('Server response:', data);
+                    })
+                    .catch(error => {
+                        // Обработайте ошибку, если необходимо
+                        console.error('Error:', error);
+                    });
+                }
+            });
+        });
+    </script>
 </body>
 
 </html>
