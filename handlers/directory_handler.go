@@ -92,7 +92,9 @@ func DirectoryHandler(c *gin.Context) {
 	entries = append(entries, fileInfos...)
 	startingUploadDirLen := len(entries)
 	//add uploaded files
-	entries = append(entries, uploadedFiles...)
+	if CurrentDirectoryPath == startup.RootPath {
+		entries = append(entries, uploadedFiles...)
+	}
 
 	type Files struct {
 		FileName string
