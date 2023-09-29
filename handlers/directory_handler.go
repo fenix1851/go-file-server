@@ -90,6 +90,7 @@ func DirectoryHandler(c *gin.Context) {
 	entries = append(entries, pseudoDir)
 	//add file infos
 	entries = append(entries, fileInfos...)
+	startingUploadDirLen := len(entries)
 	//add uploaded files
 	entries = append(entries, uploadedFiles...)
 
@@ -112,18 +113,24 @@ func DirectoryHandler(c *gin.Context) {
 
 	// Process directory entries
 	for i, entry := range entries {
-		if i == len(entries)-1 {
-			fmt.Printf("last uploaded file:%s", entry)
-		}
 		entryName := entry.Name()
 		entryPath := filepath.Join(folderPath, entryName)
 		entryPath = entryPath[len(RootDirectoryPath):]
-		entryPath = filepath.ToSlash(entryPath)
-		// remove letter: from path for Windows if it exists and if len > 3 using regexp
+		if i >= startingUploadDirLen-1 {
+			fmt.Print("\n1")
+			baseDir, err := os.Getwd()
+			if err != nil {
+				fmt.Println("Ошибка при получении текущего рабочего каталога:", err)
+				return
+			}
+			entryPath = filepath.Join(baseDir, "data", "uploaded", entryName)
+		}
 
+		entryPath = filepath.ToSlash(entryPath)
 		if entry == pseudoDir {
 			entryName = ".."
 		}
+		// remove letter: from path for Windows if it exists and if len > 3 using regexp
 		regexp := regexp.MustCompile(`^[a-zA-Z]:/`)
 		if regexp.MatchString(entryPath) {
 			entryPath = entryPath[2:]
