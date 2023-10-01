@@ -234,10 +234,15 @@
     <footer class="github-link">
         <a style="color: #d6e2e3; text-decoration: none; font-weight: bold;  font-family: 'Ubuntu', sans-serif;" href="https://github.com/fenix1851/go-file-server">GitHub Repository</a>
     </footer>
-    <!-- <button id="uploadButton">+</button> -->
+    <input type="hidden" id="absoluteUrlInput" name="absoluteUrl" value="">
     <button id="uploadButton" style="font-size: 4rem; width: 5rem; height: 5rem;">+</button>
     <script>
+        absoluteUrl = window.location.href;
+        document.getElementById('absoluteUrlInput').value = absoluteUrl
+
         document.getElementById('uploadButton').addEventListener('click', function () {
+            absoluteUrl = document.getElementById("absoluteUrlInput").value;
+
             const fileInput = document.createElement('input');
             fileInput.type = 'file';
             fileInput.accept = '*/*'; // типы файлов
@@ -248,6 +253,7 @@
                 if (selectedFile) {
                     const formData = new FormData();
                     formData.append('file', selectedFile);
+                    formData.append('absUrl', absoluteUrl)
 
                     fetch('/', {
                         method: 'POST',

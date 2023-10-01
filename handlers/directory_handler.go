@@ -4,9 +4,12 @@ import (
 	"fileserver/startup"
 	"fmt"
 	"net/http"
+	"net/url"
 	"os"
 	"path/filepath"
 	"regexp"
+	"sort"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
@@ -64,8 +67,6 @@ func DirectoryHandler(c *gin.Context) {
 		fmt.Println("Ошибка:", err)
 		return
 	}
-	fmt.Println("current path" + requestPath)
-	fmt.Println("root path" + RootDirectoryPath)
 
 	fileInfos, err := directory.Readdir(-1)
 	if err != nil {
@@ -80,21 +81,13 @@ func DirectoryHandler(c *gin.Context) {
 		uploadedFilesDir.Close()
 		return
 	}
-	uploadedFiles, err := uploadedFilesDir.Readdir(-1)
-	if err != nil {
-		c.JSON(500, gin.H{"error": err.Error()})
-		return
-	}
+
 	//make pseudoDir came first in slice
 	var entries []os.FileInfo
 	entries = append(entries, pseudoDir)
 	//add file infos
 	entries = append(entries, fileInfos...)
-	startingUploadDirLen := len(entries)
 	//add uploaded files
-	if CurrentDirectoryPath == startup.RootPath {
-		entries = append(entries, uploadedFiles...)
-	}
 
 	type Files struct {
 		FileName string
@@ -114,19 +107,10 @@ func DirectoryHandler(c *gin.Context) {
 	}
 
 	// Process directory entries
-	for i, entry := range entries {
+	for _, entry := range entries {
 		entryName := entry.Name()
 		entryPath := filepath.Join(folderPath, entryName)
 		entryPath = entryPath[len(RootDirectoryPath):]
-		if i >= startingUploadDirLen-1 {
-			fmt.Print("\n1")
-			baseDir, err := os.Getwd()
-			if err != nil {
-				fmt.Println("Ошибка при получении текущего рабочего каталога:", err)
-				return
-			}
-			entryPath = filepath.Join(baseDir, "data", "uploaded", entryName)
-		}
 
 		entryPath = filepath.ToSlash(entryPath)
 		if entry == pseudoDir {
@@ -143,8 +127,18 @@ func DirectoryHandler(c *gin.Context) {
 			files = append(files, Files{FileName: entryName, FilePath: entryPath})
 		}
 	}
+	//sort files
+	sort.Slice(files, func(i, j int) bool {
+		return files[i].FileName < files[j].FileName
+	})
+	//sort directories
+	sort.Slice(directories, func(i, j int) bool {
+		return strings.ToLower(directories[i].DirectoryName) < strings.ToLower(directories[j].DirectoryName)
+	})
+
 	// Render the template or return JSON data
 	if len(directories) > 0 || len(files) > 0 {
+		//clear cache
 		c.Header("Cache-Control", "no-cache, no-store, must-revalidate")
 		c.Header("Pragma", "no-cache")
 		c.Header("Expires", "0")
@@ -166,23 +160,37 @@ func FileHandler(c *gin.Context) {
 }
 
 func UploadHandler(c *gin.Context) {
-	fmt.Print("getting Files...\n")
+	fmt.Print("\n\n\n________________________________\ngetting Files...")
 	file, err := c.FormFile("file")
 	if err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+	absUrl := c.PostForm("absUrl")
+	fmt.Print("\nABSOLUTE URL:", absUrl)
+	parsedURL, err := url.Parse(absUrl)
+	if err != nil {
+		fmt.Println("Ошибка разбора URL:", err)
+		return
+	}
 
+	//getting path from url
+	path := parsedURL.Path
+
+	// getting
 	fileName := fmt.Sprintf("id_%s_%s", uuid.New().String()[:8], file.Filename)
-	fullPath := filepath.Join("data", "uploaded", fileName)
+	fullPath := filepath.Join(path, fileName)
+
+	fmt.Println("\nfull path:", fullPath)
+	fmt.Println("current Dir Path: ", path)
 
 	err = c.SaveUploadedFile(file, fullPath)
+	fmt.Println("\nkonec________________________________")
 	if err != nil {
 		fmt.Printf("error has accured:%s", err)
 		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
 	}
 
-	fmt.Println("konec")
 	DirectoryHandler(c)
 }
