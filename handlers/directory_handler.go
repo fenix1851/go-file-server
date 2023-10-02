@@ -74,13 +74,6 @@ func DirectoryHandler(c *gin.Context) {
 		return
 	}
 	//get uploaded files
-	uploadedFilesPath := filepath.Join("data/uploaded")
-	uploadedFilesDir, err := os.Open(uploadedFilesPath)
-	if err != nil {
-		c.JSON(500, gin.H{"error": err.Error()})
-		uploadedFilesDir.Close()
-		return
-	}
 
 	//make pseudoDir came first in slice
 	var entries []os.FileInfo
