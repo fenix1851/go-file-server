@@ -12,7 +12,6 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 )
 
 // RootDirectoryPath is the path to the root directory to be served
@@ -23,7 +22,7 @@ func DirectoryHandler(c *gin.Context) {
 	var CurrentDirectoryPath string = startup.RootPath
 	fmt.Println(requestPath, "requestPath")
 	if requestPath != "/" {
-		// Преобразуем путь в стиле Windows в путь в стиле Unix
+		// Convert a Windows-style path to a Unix-style path
 		requestPath = filepath.ToSlash(requestPath)
 		CurrentDirectoryPath = filepath.Join(requestPath)
 	}
@@ -73,7 +72,6 @@ func DirectoryHandler(c *gin.Context) {
 		c.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
-	//get uploaded files
 
 	//make pseudoDir came first in slice
 	var entries []os.FileInfo
@@ -163,27 +161,32 @@ func UploadHandler(c *gin.Context) {
 	fmt.Print("\nABSOLUTE URL:", absUrl)
 	parsedURL, err := url.Parse(absUrl)
 	if err != nil {
-		fmt.Println("Ошибка разбора URL:", err)
+		c.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
-
 	//getting path from url
 	path := parsedURL.Path
-
-	// getting
-	fileName := fmt.Sprintf("id_%s_%s", uuid.New().String()[:8], file.Filename)
-	fullPath := filepath.Join(path, fileName)
+	fullPath := filepath.Join(path, file.Filename)
 
 	fmt.Println("\nfull path:", fullPath)
 	fmt.Println("current Dir Path: ", path)
 
-	err = c.SaveUploadedFile(file, fullPath)
-	fmt.Println("\nkonec________________________________")
-	if err != nil {
-		fmt.Printf("error has accured:%s", err)
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+	_, err = os.Stat(fullPath)
+	//if file doesnt already exists save it
+	if os.IsNotExist(err) {
+		err = c.SaveUploadedFile(file, fullPath)
+		if err != nil {
+			c.JSON(500, gin.H{"error": err.Error()})
+			return
+		}
+	} else if err == nil {
+		fmt.Printf("file %s already exists in directory %s\n", file.Filename, fullPath)
+	} else {
+		c.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
+
+	fmt.Println("\nfile saved\n________________________________")
 
 	DirectoryHandler(c)
 }
