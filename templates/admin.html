@@ -4,30 +4,100 @@
 <head>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Ubuntu&display=swap">
     <title>Admin Panel</title>
+    <style>
+        body {
+            background-color: #121212;
+            color: #ffffff;
+            font-family: 'Ubuntu', sans-serif;
+            margin: 0;
+            overflow-x: hidden;
+        }
+
+        .home-link {
+            color: #d6e2e3;
+            text-decoration: none;
+            font-weight: bold;
+            margin: 10px;
+            font-family: 'Ubuntu', sans-serif;
+            font-size: 20px;
+        }
+
+        h1 {
+            font-size: 24px;
+            color: #ffffff;
+            margin-top: 0;
+        }
+
+        .access-info {
+            margin: 0 px;
+            font-family: 'Ubuntu', sans-serif;
+        }
+
+        .user-card {
+            background-color: #1e1e1e;
+            border: 1px solid #333;
+            border-radius: 5px;
+            padding: 30px;
+            margin: 10px;
+            max-width: 400px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.2s ease-in-out;
+        }
+
+        form {
+            color: #ccc;
+            font-size: 18px;
+        }
+
+        label {
+            color: #ffffff;
+            font-size: 18px;
+        }
+
+        input[type="text"] {
+            background-color: #333;
+            border: 1px solid #555;
+            color: #ffffff;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+
+        button {
+            background-color: #007bff;
+            color: #ffffff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 18px;
+        }
+
+        .github-link {
+            background-color: #000000;
+            background-image: linear-gradient(to bottom, #4e4e4e, #000000);
+            padding: 10px;
+            text-align: center;
+            width: 100%;
+            bottom: 0;
+        }
+
+        .github-link a {
+            color: #d6e2e3;
+            text-decoration: none;
+            font-weight: bold;
+            font-family: 'Ubuntu', sans-serif;
+        }
+    </style>
 </head>
 
-<body style="
-background-color: #121212; 
-color: #ffffff;
-font-family: 'Ubuntu', sans-serif; 
-margin: 0;
-overflow-x: hidden;">
-    <div style="display: flex; 
+<body>
+    <div style="display: flex;
     flex-direction: column;
     align-items: center;">
-        <a class="home-link" href="/"
-            style="color: #d6e2e3;
-            text-decoration: none; 
-            font-weight: bold;
-            margin: 20px; 
-            font-family: 'Ubuntu', sans-serif; 
-            font-size: 24px;">Home</a>
-        <h1 style="font-size: 30px; 
-        color: #ffffff;
-        margin-top: 0;">Users</h1>
-        <p class="access-info" style="margin: 0 px;
-        font-family: 'Ubuntu', sans-serif;">
-            Accesses: <br>
+        <a class="home-link" href="/">Home</a>
+        <h1>Users</h1>
+        <p class="access-info">Accesses: <br>
             0: No Access <br>
             1-555: Read Only <br>
             556-998: Read/Write <br>
@@ -35,49 +105,18 @@ overflow-x: hidden;">
         </p>
     </div>
     {{range .Users}}
-    <div class="user-card" style="
-    background-color: #1e1e1e;
-    border: 1px solid #333;
-    border-radius: 5px;
-    padding: 30px; 
-    margin: 20px; 
-    max-width: 400px; 
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    transition: transform 0.2s ease-in-out;">
+    <div class="user-card">
         <form action="/admin/patch_user" method="post">
-            <p style="color: #ccc; font-size: 24px; ">Username: {{.Username}}</p>
+            <p>Username: {{.Username}}</p>
             <input type="hidden" id="username" name="username" value="{{.Username}}">
-            <p><label for="access" style="color: #ffffff; font-size: 24px;">Access:</label></p>
-            <input type="text"
-            id="access" name="access"
-            value="{{.Access}}"
-            style="background-color: #333;
-            border: 1px solid #555;
-            color: #ffffff;
-            padding: 20px; 
-            border-radius: 5px;
-            font-size: 24px; ">
-            <button type="submit" style="background-color: #007bff; 
-            color: #ffffff;
-            border: none;
-            padding: 20px 40px; 
-            border-radius: 5px;
-            cursor: pointer;
-            margin-top: 5px;
-            font-size: 24px;">Update User</button>
+            <p><label for="access">Access:</label></p>
+            <input type="text" id="access" name="access" value="{{.Access}}">
+            <button type="submit">Update User</button>
         </form>
     </div>
     {{end}}
-    <footer class="github-link" style="background-color: #000000; 
-    background-image: linear-gradient(to bottom, #4e4e4e, #000000); 
-    padding: 20px; 
-    text-align: center;
-    width: 100%;  
-    bottom: 0;">
-        <a href="https://github.com/fenix1851/go-file-server" style="color: #d6e2e3; 
-        text-decoration: none;
-        font-weight: bold; 
-        font-family: 'Ubuntu', sans-serif; font-size: 24px;">GitHub Repository</a>
+    <footer class="github-link">
+        <a href="https://github.com/fenix1851/go-file-server">GitHub Repository</a>
     </footer>
 </body>
 
