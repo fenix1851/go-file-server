@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	"fileserver/repository"
+	"fileserver/database"
 	// "fmt"
 	"github.com/gin-gonic/gin"
 	// "os"
@@ -9,7 +9,7 @@ import (
 )
 
 func AdminHandler(c *gin.Context) {
-	users, err := repository.GetUsers()
+	users, err := database.GetUsers(database.DB)
 	if err != nil {
 		c.JSON(500, gin.H{"error": err.Error()})
 		return
@@ -28,12 +28,19 @@ func PatchUser(c *gin.Context) {
 		c.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
-	user := repository.GetUser(username)
+	user, err := database.GetUser(database.DB, username)
+	if err != nil {
+		c.JSON(500, gin.H{"Error": err})
+	}
 	if user.Access == 999 {
 		c.Redirect(302, "/admin")
 		return
 	}
 	user.Access = accessInt
-	repository.UpdateUser(user)
+	database.UpdateUser(database.DB, user)
+	if err != nil {
+		c.JSON(500, gin.H{"error": err.Error()})
+		return
+	}
 	c.Redirect(302, "/admin")
 }

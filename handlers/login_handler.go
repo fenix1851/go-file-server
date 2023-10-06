@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	"fileserver/repository"
+	"fileserver/database"
 	"fileserver/utils"
 
 	"github.com/gin-gonic/gin"
@@ -18,7 +18,10 @@ func LoginHandler(c *gin.Context) {
 		username := c.PostForm("username")
 		password := c.PostForm("password")
 		// check if user exists
-		user := repository.GetUser(username)
+		user, err := database.GetUser(database.DB, username)
+		if err != nil {
+			c.JSON(500, gin.H{"Error": err})
+		}
 		if user.Username == "" {
 			c.HTML(401, "login.html", gin.H{"Error": "User does not exist"})
 			return
@@ -41,7 +44,11 @@ func LoginHandler(c *gin.Context) {
 		// update user
 		user.AccessToken = access_token
 		user.RefreshToken = refresh_token
-		repository.UpdateUser(user)
+		database.UpdateUser(database.DB, user)
+		if err != nil {
+			c.HTML(500, "login.html", gin.H{"Error": "Error updating user"})
+			return
+		}
 		// set cookie
 		c.SetCookie("access_token", access_token, 3600, "/", "localhost", false, true)
 		c.SetCookie("refresh_token", refresh_token, 3600, "/", "localhost", false, true)

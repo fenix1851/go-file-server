@@ -4,7 +4,7 @@ import (
 	"crypto/sha256"
 	"encoding/json"
 	"fileserver/cli"
-	"fileserver/repository"
+	"fileserver/database"
 	"flag"
 	"fmt"
 	"os"
@@ -28,8 +28,11 @@ func declareRootPaths() string {
 	}
 }
 
-func createAdmin() {
-	user := repository.GetUser("admin")
+func createAdmin() error {
+	user, err := database.GetUser(database.DB, "admin")
+	if err != nil {
+		return err
+	}
 	flag.Parse()
 	password := *cli.AdminPass
 
@@ -41,18 +44,27 @@ func createAdmin() {
 			fmt.Println("password isn`t empty")
 			hashedPassword := sha256.Sum256([]byte(password))
 			user.HashedPassword = hashedPassword
-			repository.UpdateUser(user)
-			return
+			database.UpdateUser(database.DB, user)
+			if err != nil {
+				fmt.Println("Error while updating user:", err)
+				return err
+			}
+
+			return nil
 		}
-		return
+		return nil
 	}
 
 	// if admin dont exists and we didnt declare flag
 	if password == "" {
 		password = defaultAdminPass
 	}
-	user = repository.CreateUser("admin", password, 999)
+	user, err = database.CreateUser(database.DB, "admin", password, 999)
+	if err != nil {
+		panic(err)
+	}
 	fmt.Println("created user admin with priviliges with password: \n" + password)
+	return nil
 }
 
 func Init() {

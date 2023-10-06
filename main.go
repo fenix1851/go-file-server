@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fileserver/database"
 	"fileserver/handlers"
 	"fileserver/middlewares"
 	"fileserver/startup"
@@ -9,6 +10,7 @@ import (
 )
 
 func main() {
+	database.DBinitialize()
 	gin := gin.Default()
 	gin.LoadHTMLGlob("templates/*")
 	gin.GET("/login", handlers.LoginHandler)

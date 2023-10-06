@@ -2,7 +2,7 @@ package middlewares
 
 import (
 	// "enconding/json"
-	"fileserver/repository"
+	"fileserver/database"
 	"fmt"
 
 	"github.com/gin-gonic/gin"
@@ -20,7 +20,10 @@ func RolesMiddleware(minAccess int) gin.HandlerFunc {
 		fmt.Println(exists)
 		if exists {
 			str := string(username.(string))
-			user := repository.GetUser(str)
+			user, err := database.GetUser(database.DB, str)
+			if err != nil{
+				c.JSON(500, gin.H{"Error": err})
+			}
 			fmt.Println(user)
 			fmt.Println(user.Access)
 			if user.Access > minAccess {

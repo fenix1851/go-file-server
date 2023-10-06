@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	"fileserver/repository"
+	"fileserver/database"
 	"fileserver/utils"
 	"fmt"
 
@@ -16,7 +16,7 @@ func RefreshHandler(c *gin.Context) {
 		return
 	}
 	// get user from refresh token
-	user, err := repository.GetUserByToken(refresh_token, "refresh")
+	user, err := database.GetUserByToken(refresh_token, "refresh")
 	if err != nil {
 		c.Redirect(302, "/login")
 		return
@@ -32,7 +32,10 @@ func RefreshHandler(c *gin.Context) {
 	}
 	// update user
 	user.AccessToken = access_token
-	repository.UpdateUser(user)
+	database.UpdateUser(database.DB, user)
+	if err != nil {
+		fmt.Println(err)
+	}
 	// set cookies
 	c.SetCookie("access_token", access_token, 60*60*24, "/", "localhost", false, true)
 	c.SetCookie("refresh_token", user.RefreshToken, 60*60*24*14, "/", "localhost", false, true)
