@@ -2,6 +2,7 @@ package startup
 
 import (
 	"crypto/sha256"
+	"encoding/hex"
 	"encoding/json"
 	"fileserver/cli"
 	"fileserver/database"
@@ -43,7 +44,7 @@ func createAdmin() error {
 		if password != "" {
 			fmt.Println("password isn`t empty")
 			hashedPassword := sha256.Sum256([]byte(password))
-			user.HashedPassword = hashedPassword
+			user.HashedPassword = hex.EncodeToString(hashedPassword[:])
 			database.UpdateUser(database.DB, user)
 			if err != nil {
 				fmt.Println("Error while updating user:", err)

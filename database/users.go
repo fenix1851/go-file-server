@@ -1,6 +1,7 @@
 package database
 
 import (
+	"encoding/hex"
 	"fileserver/utils"
 	"fmt"
 	"time"
@@ -15,7 +16,7 @@ type User struct {
 	gorm.Model
 	Uuid           string `gorm:"uniqueIndex"`
 	Username       string
-	HashedPassword [32]byte
+	HashedPassword string
 	RefreshToken   string
 	AccessToken    string
 	Access         int
@@ -48,7 +49,7 @@ func CreateUser(db *gorm.DB, username string, password string, access int) (User
 	user := User{
 		Uuid:           uuid,
 		Username:       username,
-		HashedPassword: hashedPassword,
+		HashedPassword: hex.EncodeToString(hashedPassword[:]),
 		RefreshToken:   refresh_token,
 		AccessToken:    access_token,
 		Access:         access,
@@ -66,6 +67,9 @@ func GetUser(db *gorm.DB, username string) (User, error) {
 	var user User
 
 	result := db.Where("username = ?", username).First(&user)
+	if result.Error != nil && result.Error.Error() == "record not found" {
+		return User{}, nil
+	}
 	if result.Error != nil {
 		return User{}, result.Error
 	}
