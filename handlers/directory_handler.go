@@ -63,7 +63,7 @@ func DirectoryHandler(c *gin.Context) {
 	parentDir := CurrentDirectoryPath + "/.."
 	pseudoDir, err := os.Stat(parentDir)
 	if err != nil {
-		fmt.Println("Ошибка:", err)
+		fmt.Println("ER", err)
 		return
 	}
 

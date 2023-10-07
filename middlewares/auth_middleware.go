@@ -2,7 +2,7 @@ package middlewares
 
 import (
 	// "enconding/json"
-	"fileserver/database"
+	"fileserver/repository"
 	"fmt"
 
 	"github.com/gin-gonic/gin"
@@ -26,7 +26,7 @@ func AuthMiddleware(c *gin.Context) {
 		}
 	}
 	// get user from access token
-	user, err := database.GetUserByToken(access_token, "access")
+	user, err := repository.GetUserByToken(access_token, "access")
 	fmt.Println(user, "user from access token in auth middleware")
 	if err != nil {
 		c.Redirect(302, "/login")

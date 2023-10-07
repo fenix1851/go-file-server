@@ -1,14 +1,26 @@
 package handlers
 
 import (
-	"fileserver/database"
+	"fileserver/repository"
 	"fileserver/utils"
 	"fmt"
 
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
 func RefreshHandler(c *gin.Context) {
+	dbInterface, exists := c.Get("db")
+	if !exists {
+		c.JSON(500, gin.H{"error": "DB not found in context"})
+		return
+	}
+
+	DB, ok := dbInterface.(*gorm.DB)
+	if !ok {
+		c.JSON(500, gin.H{"error": "DB is not of type *gorm.DB"})
+		return
+	}
 	// get refresh token from cookie
 	refresh_token, err := c.Cookie("refresh_token")
 	if err != nil {
@@ -16,7 +28,7 @@ func RefreshHandler(c *gin.Context) {
 		return
 	}
 	// get user from refresh token
-	user, err := database.GetUserByToken(refresh_token, "refresh")
+	user, err := repository.GetUserByToken(refresh_token, "refresh")
 	if err != nil {
 		c.Redirect(302, "/login")
 		return
@@ -32,7 +44,7 @@ func RefreshHandler(c *gin.Context) {
 	}
 	// update user
 	user.AccessToken = access_token
-	database.UpdateUser(database.DB, user)
+	repository.UpdateUser(DB, user)
 	if err != nil {
 		fmt.Println(err)
 	}

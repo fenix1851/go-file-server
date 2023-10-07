@@ -1,10 +1,11 @@
 package handlers
 
 import (
-	"fileserver/database"
+	"fileserver/repository"
 	"fileserver/utils"
 
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 	// "os"
 	// "path/filepath"
 )
@@ -14,11 +15,22 @@ func LoginHandler(c *gin.Context) {
 	if c.Request.Method == "GET" {
 		c.HTML(200, "login.html", gin.H{})
 	} else if c.Request.Method == "POST" {
+		dbInterface, exists := c.Get("db")
+		if !exists {
+			c.JSON(500, gin.H{"error": "DB not found in context"})
+			return
+		}
+
+		DB, ok := dbInterface.(*gorm.DB)
+		if !ok {
+			c.JSON(500, gin.H{"error": "DB is not of type *gorm.DB"})
+			return
+		}
 		// parse form
 		username := c.PostForm("username")
 		password := c.PostForm("password")
 		// check if user exists
-		user, err := database.GetUser(database.DB, username)
+		user, err := repository.GetUser(DB, username)
 		if err != nil {
 			c.JSON(500, gin.H{"Error": err})
 		}
@@ -44,7 +56,7 @@ func LoginHandler(c *gin.Context) {
 		// update user
 		user.AccessToken = access_token
 		user.RefreshToken = refresh_token
-		database.UpdateUser(database.DB, user)
+		repository.UpdateUser(DB, user)
 		if err != nil {
 			c.HTML(500, "login.html", gin.H{"Error": "Error updating user"})
 			return

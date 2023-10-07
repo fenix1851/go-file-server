@@ -252,7 +252,7 @@
 
             const fileInput = document.createElement('input');
             fileInput.type = 'file';
-            fileInput.accept = '*/*'; // типы файлов
+            fileInput.accept = '*/*';
             fileInput.click();
 
             fileInput.addEventListener('change', function () {
@@ -276,7 +276,7 @@
                         console.error('Error:', error);
                     });
                 }
-                location.reload(); // Перезагрузка страницы
+                location.reload();
             });
         });
         

@@ -1,15 +1,28 @@
 package handlers
 
 import (
-	"fileserver/database"
+	"fileserver/repository"
 	// "fmt"
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 	// "os"
 	"strconv"
 )
 
 func AdminHandler(c *gin.Context) {
-	users, err := database.GetUsers(database.DB)
+	dbInterface, exists := c.Get("db")
+	if !exists {
+		c.JSON(500, gin.H{"error": "DB not found in context"})
+		return
+	}
+
+	DB, ok := dbInterface.(*gorm.DB)
+	if !ok {
+		c.JSON(500, gin.H{"error": "DB is not of type *gorm.DB"})
+		return
+	}
+
+	users, err := repository.GetUsers(DB)
 	if err != nil {
 		c.JSON(500, gin.H{"error": err.Error()})
 		return
@@ -20,6 +33,18 @@ func AdminHandler(c *gin.Context) {
 }
 
 func PatchUser(c *gin.Context) {
+	dbInterface, exists := c.Get("db")
+	if !exists {
+		c.JSON(500, gin.H{"error": "DB not found in context"})
+		return
+	}
+
+	DB, ok := dbInterface.(*gorm.DB)
+	if !ok {
+		c.JSON(500, gin.H{"error": "DB is not of type *gorm.DB"})
+		return
+	}
+
 	username := c.PostForm("username")
 	access := c.PostForm("access")
 	// convert access to int
@@ -28,7 +53,7 @@ func PatchUser(c *gin.Context) {
 		c.JSON(500, gin.H{"error": err.Error()})
 		return
 	}
-	user, err := database.GetUser(database.DB, username)
+	user, err := repository.GetUser(DB, username)
 	if err != nil {
 		c.JSON(500, gin.H{"Error": err})
 	}
@@ -37,7 +62,7 @@ func PatchUser(c *gin.Context) {
 		return
 	}
 	user.Access = accessInt
-	database.UpdateUser(database.DB, user)
+	repository.UpdateUser(DB, user)
 	if err != nil {
 		c.JSON(500, gin.H{"error": err.Error()})
 		return

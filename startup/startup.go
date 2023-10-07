@@ -5,7 +5,7 @@ import (
 	"encoding/hex"
 	"encoding/json"
 	"fileserver/cli"
-	"fileserver/database"
+	"fileserver/repository"
 	"flag"
 	"fmt"
 	"os"
@@ -30,7 +30,11 @@ func declareRootPaths() string {
 }
 
 func createAdmin() error {
-	user, err := database.GetUser(database.DB, "admin")
+	DB, err := repository.GetDBInstance()
+	if err != nil {
+		return err
+	}
+	user, err := repository.GetUser(DB, "admin")
 	if err != nil {
 		return err
 	}
@@ -45,7 +49,7 @@ func createAdmin() error {
 			fmt.Println("password isn`t empty")
 			hashedPassword := sha256.Sum256([]byte(password))
 			user.HashedPassword = hex.EncodeToString(hashedPassword[:])
-			database.UpdateUser(database.DB, user)
+			repository.UpdateUser(DB, user)
 			if err != nil {
 				fmt.Println("Error while updating user:", err)
 				return err
@@ -60,7 +64,7 @@ func createAdmin() error {
 	if password == "" {
 		password = defaultAdminPass
 	}
-	user, err = database.CreateUser(database.DB, "admin", password, 999)
+	user, err = repository.CreateUser(DB, "admin", password, 999)
 	if err != nil {
 		panic(err)
 	}

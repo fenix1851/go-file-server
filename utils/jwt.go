@@ -10,10 +10,10 @@ import (
 )
 
 func CreateToken(username string, token_type string) (string, error) {
-	// Создание токена
+	// Create token
 	token := jwt.New(jwt.SigningMethodHS256)
 	var secret string
-	// Добавление данных в полезную нагрузку
+	// Adding token into payload
 	claims := token.Claims.(jwt.MapClaims)
 	claims["username"] = username
 	if token_type == "access" {
@@ -24,7 +24,7 @@ func CreateToken(username string, token_type string) (string, error) {
 		claims["exp"] = time.Now().Add(time.Hour * 24 * 14).Unix()
 	}
 
-	// Подписание токена с использованием секретного ключа
+	// Use key to sign
 	secretKey := []byte(secret)
 	tokenString, err := token.SignedString(secretKey)
 	if err != nil {
@@ -58,7 +58,7 @@ type TokenPayload struct {
 }
 
 func DecodeToken(tokenString string) (TokenPayload, error) {
-	// Парсинг токена
+	// Token parse
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		return []byte(GetSecrets().AccessSecret), nil
 	})
@@ -76,7 +76,7 @@ func DecodeToken(tokenString string) (TokenPayload, error) {
 }
 
 func ValidateToken(tokenString string) error {
-	// Парсинг токена
+	// Token parse
 	_, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		return []byte(GetSecrets().AccessSecret), nil
 	})

@@ -1,9 +1,10 @@
 package handlers
 
 import (
-	"fileserver/database"
+	"fileserver/repository"
 
 	"github.com/gin-gonic/gin"
+	"gorm.io/gorm"
 )
 
 func RegisterHandler(c *gin.Context) {
@@ -11,12 +12,23 @@ func RegisterHandler(c *gin.Context) {
 	if c.Request.Method == "GET" {
 		c.HTML(200, "register.html", gin.H{})
 	} else if c.Request.Method == "POST" {
+		dbInterface, exists := c.Get("db")
+		if !exists {
+			c.JSON(500, gin.H{"error": "DB not found in context"})
+			return
+		}
+
+		DB, ok := dbInterface.(*gorm.DB)
+		if !ok {
+			c.JSON(500, gin.H{"error": "DB is not of type *gorm.DB"})
+			return
+		}
 		// parse form
 		username := c.PostForm("username")
 		password := c.PostForm("password")
 		// check if user exists
-		user, err := database.GetUser(database.DB, username)
-		if err != nil{
+		user, err := repository.GetUser(DB, username)
+		if err != nil {
 			c.JSON(500, gin.H{"Error": err})
 		}
 		if user.Username != "" {
@@ -24,7 +36,7 @@ func RegisterHandler(c *gin.Context) {
 			return
 		}
 		// create user
-		user, err = database.CreateUser(database.DB, username, password, 0)
+		user, err = repository.CreateUser(DB, username, password, 0)
 		if err != nil {
 			c.HTML(400, "register.html", gin.H{"Error": "Error while creating user"})
 			return

@@ -1,4 +1,4 @@
-package database
+package repository
 
 import (
 	"encoding/hex"
@@ -80,7 +80,6 @@ func GetUser(db *gorm.DB, username string) (User, error) {
 func GetUsers(db *gorm.DB) ([]User, error) {
 	var users []User
 
-	// Извлекаем всех пользователей из базы данных
 	result := db.Find(&users)
 	if result.Error != nil {
 		return nil, result.Error
