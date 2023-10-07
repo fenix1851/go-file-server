@@ -10,7 +10,7 @@ func DBMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		db, err := repository.GetDBInstance()
 		if err != nil {
-			c.JSON(500, gin.H{"error": "DB not found in context"})
+			c.JSON(500, gin.H{"error": "couldnt create an db instance"})
 			return
 		}
 		c.Set("db", db)
