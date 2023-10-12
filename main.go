@@ -3,14 +3,17 @@ package main
 import (
 	"fileserver/handlers"
 	"fileserver/middlewares"
+	"fileserver/repository"
 	"fileserver/startup"
 
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
+	repository.DBinitialize()
 	gin := gin.Default()
 	gin.LoadHTMLGlob("templates/*")
+	gin.Use(middlewares.DBMiddleware())
 	gin.GET("/login", handlers.LoginHandler)
 	gin.POST("/login", handlers.LoginHandler)
 	gin.GET("/access", handlers.AccessHandler)

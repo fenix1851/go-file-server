@@ -1,34 +1,45 @@
 package repository
 
 import (
-	"crypto/sha256"
-	"encoding/json"
+	"encoding/hex"
 	"fileserver/utils"
 	"fmt"
-	"os"
 	"time"
 
 	"github.com/google/uuid"
+	"golang.org/x/crypto/bcrypt"
+	"gorm.io/gorm"
 )
 
 // User struct
 type User struct {
-	Uuid           string   `json:"uuid"`
-	Username       string   `json:"username"`
-	HashedPassword [32]byte `json:"password"`
-	RefreshToken   string   `json:"refresh_token"`
-	AccessToken    string   `json:"access_token"`
-	Access         int      `json:"acces"`
+	gorm.Model
+	Uuid           string `gorm:"uniqueIndex"`
+	Username       string
+	HashedPassword string
+	RefreshToken   string
+	AccessToken    string
+	Access         int
 }
 
-func CreateUser(username string, password string, access int) User {
+func CreateUser(db *gorm.DB, username string, password string, access int) (User, error) {
 	// hash password
-	hashedPassword := sha256.Sum256([]byte(password))
+	hashedPasswordBytes, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	if err != nil {
+		fmt.Println("Error:", err)
+		return User{}, err
+	}
+	var hashedPassword [32]byte
+
+	// Copy the bytes from []byte to [32]byte
+	copy(hashedPassword[:], hashedPasswordBytes)
 	// create user
 	access_token, err := utils.CreateToken(username, "access")
 	if err != nil {
 		fmt.Println(err)
+		return User{}, err
 	}
+
 	refresh_token, err := utils.CreateToken(username, "refresh")
 	if err != nil {
 		fmt.Println(err)
@@ -38,60 +49,40 @@ func CreateUser(username string, password string, access int) User {
 	user := User{
 		Uuid:           uuid,
 		Username:       username,
-		HashedPassword: hashedPassword,
+		HashedPassword: hex.EncodeToString(hashedPassword[:]),
 		RefreshToken:   refresh_token,
 		AccessToken:    access_token,
 		Access:         access,
 	}
-	// create user file
-	userFile, err := os.Create("data/users/" + username + ".json")
-	if err != nil {
-		fmt.Println(err)
+	// Save the user to the database
+	result := db.Create(&user)
+	if result.Error != nil {
+		return User{}, result.Error
 	}
-	// write user to user file
-	json.NewEncoder(userFile).Encode(user)
-	return user
+
+	return user, nil
 }
 
-func GetUser(username string) User {
-	// get user file
-	userFile, err := os.Open("data/users/" + username + ".json")
-	if err != nil {
-		fmt.Println(err)
-	}
-	// decode user from user file
+func GetUser(db *gorm.DB, username string) (User, error) {
 	var user User
-	json.NewDecoder(userFile).Decode(&user)
-	return user
-}
 
-func GetUsers() ([]User, error) {
-	// get user files
-	userFiles, err := os.ReadDir("data/users/")
-	if err != nil {
-		fmt.Println(err)
-		return nil, err
+	result := db.Where("username = ?", username).First(&user)
+	if result.Error != nil && result.Error.Error() == "record not found" {
+		return User{}, nil
+	}
+	if result.Error != nil {
+		return User{}, result.Error
 	}
 
-	// create slice to hold users
+	return user, nil
+}
+
+func GetUsers(db *gorm.DB) ([]User, error) {
 	var users []User
 
-	// decode users from user files
-	for _, userFile := range userFiles {
-		file, err := os.Open("data/users/" + userFile.Name())
-		if err != nil {
-			fmt.Println(err)
-			continue
-		}
-		defer file.Close() // Close the file when done
-
-		var user User
-		err = json.NewDecoder(file).Decode(&user)
-		if err != nil {
-			fmt.Println(err)
-			continue
-		}
-		users = append(users, user)
+	result := db.Find(&users)
+	if result.Error != nil {
+		return nil, result.Error
 	}
 
 	return users, nil
@@ -126,24 +117,39 @@ func GetUserByToken(token string, token_type string) (User, error) {
 		}
 	}
 	// get user
-	user := GetUser(tokenPayload.Username)
+	user, err := GetUser(DB, tokenPayload.Username)
+	if err != nil {
+		fmt.Println("error while getting user:", err)
+		return User{}, err
+	}
 	return user, nil
 }
 
-func UpdateUser(user User) {
+func UpdateUser(db *gorm.DB, user User) error {
 	fmt.Println("Updating user...")
-	// get user file
-	userFile, err := os.Open("data/users/" + user.Username + ".json")
+	existingUser, err := GetUser(db, user.Username)
 	if err != nil {
-		fmt.Println(err)
-	}
-	os.Remove("data/users/" + user.Username + ".json")
-	// create user file
-	userFile, err = os.Create("data/users/" + user.Username + ".json")
-	if err != nil {
-		fmt.Println(err)
+		fmt.Println("Error while updating user:", err)
+		return err
 	}
 
-	// write user to user file
-	json.NewEncoder(userFile).Encode(user)
+	existingUser.Access = user.Access
+	existingUser.AccessToken = user.AccessToken
+	existingUser.CreatedAt = user.CreatedAt
+	existingUser.DeletedAt = user.DeletedAt
+	existingUser.HashedPassword = user.HashedPassword
+	existingUser.ID = user.ID
+	existingUser.Model = user.Model
+	existingUser.RefreshToken = user.RefreshToken
+	existingUser.UpdatedAt = user.UpdatedAt
+	existingUser.Username = user.Username
+	existingUser.Uuid = user.Uuid
+	existingUser.DeletedAt.Time = user.DeletedAt.Time
+
+	result := db.Save(&existingUser)
+	if result.Error != nil {
+		return result.Error
+	}
+
+	return nil
 }

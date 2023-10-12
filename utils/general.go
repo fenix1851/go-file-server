@@ -2,8 +2,10 @@ package utils
 
 import (
 	"crypto/sha256"
+	"encoding/hex"
 )
 
-func HashPassword(password string) [32]byte {
-	return sha256.Sum256([]byte(password))
+func HashPassword(password string) string {
+	hashPass := sha256.Sum256([]byte(password))
+	return hex.EncodeToString(hashPass[:])
 }

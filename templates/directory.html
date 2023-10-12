@@ -247,6 +247,7 @@
 
 <body>
     <h1>Directory Listing: {{.FolderName}}</h1>
+    <a class="admin-link" href="/login">Sign In</a>
     <a class="admin-link" href="/admin">Admin Panel</a>
     <ul>
         {{range .Directories}}
@@ -276,7 +277,7 @@
 
             const fileInput = document.createElement('input');
             fileInput.type = 'file';
-            fileInput.accept = '*/*'; // типы файлов
+            fileInput.accept = '*/*';
             fileInput.click();
 
             fileInput.addEventListener('change', function () {
@@ -300,7 +301,7 @@
                         console.error('Error:', error);
                     });
                 }
-                location.reload(); // Перезагрузка страницы
+                location.reload();
             });
         });
         
