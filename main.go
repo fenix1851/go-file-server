@@ -35,5 +35,5 @@ func main() {
 	gin.POST("/admin/patch_user", middlewares.AuthMiddleware, middlewares.RolesMiddleware(998), handlers.PatchUser)
 	gin.GET("/:path/*filepath", middlewares.AuthMiddleware, middlewares.RolesMiddleware(1), handlers.DirectoryHandler)
 	startup.Init()
-	gin.Run(":4001")
+	gin.Run(startup.PORT)
 }

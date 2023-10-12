@@ -10,11 +10,13 @@ import (
 	"fmt"
 	"os"
 	"runtime"
+	"strconv"
 
 	"github.com/google/uuid"
 )
 
 var RootPath string
+var PORT string = ":4001"
 var defaultAdminPass = uuid.New().String()
 
 func declareRootPaths() string {
@@ -82,11 +84,26 @@ func createAdmin() error {
 	return nil
 }
 
+func setPort() {
+	flag.Parse()
+	port := *cli.Port
+	//trying to get port from flag
+	//if port is not converted to int, set default port
+	intPort, err := strconv.Atoi(port)
+	if err == nil {
+		PORT = ":" + strconv.Itoa(intPort)
+		fmt.Println("port is set to " + port)
+	} else {
+		fmt.Println("port is set to default")
+	}
+}
+
 func Init() {
 	fmt.Println("Initializing...")
 	CreateDirectories()
 	FillSecrets()
 	createAdmin()
+	setPort()
 	RootPath = declareRootPaths()
 }
 
