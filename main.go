@@ -6,12 +6,20 @@ import (
 	"fileserver/repository"
 	"fileserver/startup"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
 func main() {
+	corsConfig := cors.DefaultConfig()
+	corsConfig.AllowOrigins = []string{"*"}                                       // allowed hosts
+	corsConfig.AllowMethods = []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"} // allowed methods
+	corsConfig.AllowHeaders = []string{"Origin", "Authorization", "Content-Type"} // allowed headers
+	corsConfig.AllowCredentials = true                                            // allow credentials
+
 	repository.DBinitialize()
 	gin := gin.Default()
+	gin.Use(cors.New(corsConfig))
 	gin.LoadHTMLGlob("templates/*")
 	gin.Use(middlewares.DBMiddleware())
 	gin.GET("/login", handlers.LoginHandler)
