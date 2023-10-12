@@ -23,7 +23,17 @@ func declareRootPaths() string {
 	case "windows":
 		return "C:\\"
 	case "linux":
-		return "/home/"
+		// trying to get /sjdhfgjhfdjkhg/ path
+		// if it doesnt exist, return /home/
+		homePath := "/home/"
+
+		// Проверяем существование папки
+		if _, err := os.Stat(homePath); os.IsNotExist(err) {
+			return "/root/"
+		} else {
+			return "/home/"
+		}
+
 	default:
 		return "/home/"
 	}

@@ -27,3 +27,5 @@ data/
 
 gin.log
 gin-bin
+
+*.db
