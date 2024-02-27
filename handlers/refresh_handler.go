@@ -49,8 +49,8 @@ func RefreshHandler(c *gin.Context) {
 		fmt.Println(err)
 	}
 	// set cookies
-	c.SetCookie("access_token", access_token, 60*60*24, "/", "localhost", false, true)
-	c.SetCookie("refresh_token", user.RefreshToken, 60*60*24*14, "/", "localhost", false, true)
-	c.SetCookie("username", user.Username, 60*60*24, "/", "localhost", false, true)
+	c.SetCookie("access_token", user.AccessToken, 60*60*24, "/", "", false, false)
+	c.SetCookie("refresh_token", user.RefreshToken, 60*60*24*14, "/", "", false, false)
+	c.SetCookie("username", user.Username, 60*60*24, "/", "", false, false)
 	c.Redirect(302, "/")
 }

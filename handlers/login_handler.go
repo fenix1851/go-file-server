@@ -62,8 +62,9 @@ func LoginHandler(c *gin.Context) {
 			return
 		}
 		// set cookie
-		c.SetCookie("access_token", access_token, 3600, "/", "localhost", false, true)
-		c.SetCookie("refresh_token", refresh_token, 3600, "/", "localhost", false, true)
+		c.SetCookie("access_token", user.AccessToken, 60*60*24, "/", "", false, false)
+		c.SetCookie("refresh_token", user.RefreshToken, 60*60*24*14, "/", "", false, false)
+		c.SetCookie("username", user.Username, 60*60*24, "/", "", false, false)
 		c.Redirect(302, "/")
 		return
 	}
